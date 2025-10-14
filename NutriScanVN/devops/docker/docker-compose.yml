@@ -1,0 +1,38 @@
+version: '3.9'
+services:
+  postgres:
+    image: postgres:15
+    container_name: nutriscanvn-postgres
+    environment:
+      POSTGRES_DB: nutriscan
+      POSTGRES_USER: nutriscan
+      POSTGRES_PASSWORD: nutriscan
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ../..//backend/database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nutriscan"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ../..
+      dockerfile: devops/docker/Dockerfile
+    container_name: nutriscanvn-backend
+    env_file:
+      - ../../backend/.env.example
+    environment:
+      PGHOST: postgres
+    ports:
+      - "4000:4000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: ["npm", "start", "--prefix", "backend"]
+
+volumes:
+  postgres_data:

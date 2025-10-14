@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
+    "jsx": "react-jsx",
+    "strict": true,
+    "moduleResolution": "Bundler",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    },
+    "noEmit": true,
+    "resolveJsonModule": true,
+    "types": ["react", "react-native"]
+  },
+  "include": ["./**/*.ts", "./**/*.tsx"]
+}
