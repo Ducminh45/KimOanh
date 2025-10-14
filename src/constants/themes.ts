@@ -85,6 +85,8 @@ export interface Theme {
 }
 
 const baseTheme = {
+export const lightTheme = {
+  colors: Colors,
   spacing: {
     xs: 4,
     sm: 8,
@@ -134,6 +136,7 @@ const baseTheme = {
       fontWeight: '600' as const,
       lineHeight: 24,
     },
+    xxl: 40,
   },
   borderRadius: {
     sm: 4,
@@ -141,6 +144,23 @@ const baseTheme = {
     lg: 12,
     xl: 16,
     full: 9999,
+    round: 50,
+  },
+  fontSize: {
+    xs: 12,
+    sm: 14,
+    md: 16,
+    lg: 18,
+    xl: 20,
+    xxl: 24,
+    xxxl: 32,
+  },
+  fontWeight: {
+    light: '300',
+    normal: '400',
+    medium: '500',
+    semibold: '600',
+    bold: '700',
   },
   shadows: {
     sm: {
@@ -149,12 +169,17 @@ const baseTheme = {
       shadowOpacity: 0.18,
       shadowRadius: 1.0,
       elevation: 1,
+      shadowOpacity: 0.1,
+      shadowRadius: 2,
+      elevation: 2,
     },
     md: {
       shadowColor: '#000',
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.23,
       shadowRadius: 2.62,
+      shadowOpacity: 0.15,
+      shadowRadius: 4,
       elevation: 4,
     },
     lg: {
@@ -162,6 +187,8 @@ const baseTheme = {
       shadowOffset: { width: 0, height: 4 },
       shadowOpacity: 0.30,
       shadowRadius: 4.65,
+      shadowOpacity: 0.2,
+      shadowRadius: 8,
       elevation: 8,
     },
   },
@@ -195,3 +222,9 @@ export const darkTheme: Theme = {
 };
 
 export type ThemeType = 'light' | 'dark';
+export const darkTheme = {
+  ...lightTheme,
+  colors: DarkColors,
+};
+
+export type Theme = typeof lightTheme;
