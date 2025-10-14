@@ -1,0 +1,67 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs/
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+
+# Backend
+backend/logs/
+backend/uploads/
+
+# Mobile
+mobile/.expo/
+mobile/.expo-shared/
+mobile/dist/
+mobile/web-build/
+mobile/ios/
+mobile/android/
+
+# Build artifacts
+build/
+dist/
+*.tgz
+
+# Database
+*.sql.backup
+*.dump
+
+# Docker
+docker-compose.override.yml
+
+# Testing
+coverage/
+.nyc_output/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# SSL certificates (keep structure, ignore actual certs)
+docker/ssl/*.pem
+docker/ssl/*.key
+docker/ssl/*.crt
+
+# Don't ignore example files
+!.env.example
+!docker/ssl/.gitkeep
