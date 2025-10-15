@@ -1,0 +1,88 @@
+{
+  "common": {
+    "app_name": "NutriScanVN",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "search": "Search",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "done": "Done",
+    "submit": "Submit",
+    "retry": "Retry"
+  },
+  "auth": {
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "email": "Email",
+    "password": "Password",
+    "forgot_password": "Forgot password?",
+    "no_account": "Don't have an account?",
+    "have_account": "Already have an account?",
+    "full_name": "Full name",
+    "login_success": "Login successful!",
+    "register_success": "Registration successful!"
+  },
+  "home": {
+    "title": "Home",
+    "daily_goal": "Daily Goal",
+    "calories": "Calories",
+    "water": "Water",
+    "exercise": "Exercise",
+    "quick_log": "Quick Log"
+  },
+  "scanner": {
+    "title": "Food Scanner",
+    "camera": "Camera",
+    "barcode": "Barcode",
+    "take_photo": "Take Photo",
+    "analyzing": "Analyzing...",
+    "scan_result": "Scan Result"
+  },
+  "food": {
+    "title": "Food",
+    "database": "Food Database",
+    "log": "Food Log",
+    "search_food": "Search food...",
+    "add_food": "Add Food",
+    "breakfast": "Breakfast",
+    "lunch": "Lunch",
+    "dinner": "Dinner",
+    "snack": "Snack"
+  },
+  "progress": {
+    "title": "Progress",
+    "weight": "Weight",
+    "bmi": "BMI",
+    "trend": "Trend",
+    "statistics": "Statistics"
+  },
+  "profile": {
+    "title": "Profile",
+    "edit_profile": "Edit Profile",
+    "settings": "Settings",
+    "stats": "Statistics",
+    "achievements": "Achievements",
+    "premium": "Premium"
+  },
+  "notifications": {
+    "water_reminder": "Time to drink water!",
+    "meal_reminder": "Time for your meal!",
+    "exercise_reminder": "Let's exercise!",
+    "achievement_unlocked": "New achievement unlocked!"
+  },
+  "errors": {
+    "network_error": "Network error",
+    "invalid_email": "Invalid email",
+    "password_too_short": "Password must be at least 8 characters",
+    "required_field": "This field is required",
+    "something_wrong": "Something went wrong"
+  }
+}
