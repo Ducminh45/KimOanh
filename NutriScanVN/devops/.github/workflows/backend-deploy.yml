@@ -1,0 +1,41 @@
+name: Backend CI
+
+on:
+  push:
+    paths:
+      - 'backend/**'
+      - 'devops/**'
+      - '.github/**'
+    branches: [ main, master, '**/backend**' ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install dependencies
+        run: npm ci --prefix backend
+      - name: Lint (skip if none)
+        run: |
+          if [ -f backend/package.json ] && jq -e '.scripts.lint' backend/package.json > /dev/null; then
+            npm run lint --prefix backend
+          else
+            echo "No lint script"
+          fi
+      - name: Build (skip if none)
+        run: |
+          if [ -f backend/package.json ] && jq -e '.scripts.build' backend/package.json > /dev/null; then
+            npm run build --prefix backend
+          else
+            echo "No build script"
+          fi
+      - name: Test (skip if none)
+        run: |
+          if [ -f backend/package.json ] && jq -e '.scripts.test' backend/package.json > /dev/null; then
+            npm test --prefix backend -- --ci
+          else
+            echo "No tests"
+          fi
