@@ -122,3 +122,22 @@ CREATE TABLE IF NOT EXISTS exercise_logs (
 );
 
 CREATE INDEX IF NOT EXISTS idx_exercise_logs_user_date ON exercise_logs(user_id, logged_at DESC);
+
+-- Chat history
+CREATE TABLE IF NOT EXISTS chat_messages (
+  id UUID PRIMARY KEY,
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  role TEXT CHECK (role IN ('user','assistant')) NOT NULL,
+  content TEXT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_chat_messages_user_date ON chat_messages(user_id, created_at DESC);
+
+-- Subscription (premium)
+CREATE TABLE IF NOT EXISTS subscriptions (
+  user_id UUID PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+  tier TEXT CHECK (tier IN ('free','premium_monthly','premium_yearly')) DEFAULT 'free',
+  renewed_at TIMESTAMP WITH TIME ZONE,
+  expires_at TIMESTAMP WITH TIME ZONE
+);

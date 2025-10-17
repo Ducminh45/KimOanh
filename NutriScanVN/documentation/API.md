@@ -35,3 +35,20 @@ Base URL: `http://localhost:4000/api`
 - POST `/progress/exercise` { type, durationMin, intensity } Bearer
 - DELETE `/progress/exercise/:id` Bearer
 - GET `/progress/summary?date=YYYY-MM-DD` Bearer
+
+## Diary
+
+- GET `/diary?date=YYYY-MM-DD` Bearer
+- POST `/diary` { foodId, mealType, quantity, servingSizeG, imageUrl? } Bearer
+- PUT `/diary/:id` { mealType?, quantity?, servingSizeG?, imageUrl? } Bearer
+- DELETE `/diary/:id` Bearer
+
+## AI
+
+- POST `/ai/scan` Bearer
+  - Body: { imageBase64?: string, imageUrl?: string, locale?: 'vi'|'en', mealType?: 'breakfast'|'lunch'|'dinner'|'snack', autoLog?: boolean }
+  - Response: { items: [{ name, detectedServingGrams, confidence, match?, nutrition?, alternatives: [] }], loggedIds: [] }
+
+- POST `/ai/chat` Bearer
+  - Body: { messages: [{ role: 'user'|'assistant', content: string }], locale?: 'vi'|'en' }
+  - Response: { reply: string }

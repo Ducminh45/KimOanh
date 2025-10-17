@@ -58,5 +58,21 @@ export const schemas = {
     type: Joi.string().min(2).max(100).required(),
     durationMin: Joi.number().integer().min(1).max(600).required(),
     intensity: Joi.string().valid('low','medium','high').required()
+  }),
+  aiScan: Joi.object({
+    imageBase64: Joi.string().pattern(/^[A-Za-z0-9+/=]+$/).optional(),
+    imageUrl: Joi.string().uri().optional(),
+    locale: Joi.string().valid('vi','en').default('vi'),
+    mealType: Joi.string().valid('breakfast','lunch','dinner','snack').optional(),
+    autoLog: Joi.boolean().default(false)
+  }).custom((val, helpers) => {
+    if (!val.imageBase64 && !val.imageUrl) {
+      return helpers.error('any.custom', 'imageBase64 or imageUrl required');
+    }
+    return val;
+  }),
+  aiChat: Joi.object({
+    messages: Joi.array().items(Joi.object({ role: Joi.string().valid('user','assistant').required(), content: Joi.string().required() })).min(1).required(),
+    locale: Joi.string().valid('vi','en').default('vi')
   })
 };

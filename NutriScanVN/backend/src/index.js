@@ -7,6 +7,8 @@ import authRoutes from './routes/auth.js';
 import userRoutes from './routes/user.js';
 import foodRoutes from './routes/food.js';
 import progressRoutes from './routes/progress.js';
+import aiRoutes from './routes/ai.js';
+import diaryRoutes from './routes/diary.js';
 
 dotenv.config();
 
@@ -22,6 +24,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/food', foodRoutes);
 app.use('/api/progress', progressRoutes);
+app.use('/api/ai', aiRoutes);
+app.use('/api/diary', diaryRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ message: 'Not found' });
