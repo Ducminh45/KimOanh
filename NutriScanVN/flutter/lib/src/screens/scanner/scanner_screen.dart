@@ -3,6 +3,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:camera/camera.dart';
+import 'package:lottie/lottie.dart';
+import 'package:rive/rive.dart';
 import '../../providers.dart';
 import '../../services/api_client.dart';
 
@@ -16,6 +19,8 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
   bool _loading = false;
   List<Map<String, dynamic>> items = [];
   final _meal = ValueNotifier<String>('lunch');
+  CameraController? _camera;
+  Future<void>? _camInit;
 
   Future<void> _pickAndScan() async {
     final picker = ImagePicker();
@@ -41,6 +46,34 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
     }
   }
 
+  Future<void> _openCameraAndScan() async {
+    final cams = await availableCameras();
+    final cam = cams.first;
+    _camera = CameraController(cam, ResolutionPreset.medium, enableAudio: false);
+    _camInit = _camera!.initialize();
+    await _camInit;
+    final file = await _camera!.takePicture();
+    final bytes = await File(file.path).readAsBytes();
+    final b64 = base64Encode(bytes);
+    setState(() => _loading = true);
+    try {
+      final api = ref.read(apiClientProvider);
+      final res = await api.postJson('/ai/scan', {
+        'imageBase64': b64,
+        'locale': 'vi',
+        'mealType': _meal.value,
+        'autoLog': false,
+      });
+      setState(() => items = (res['items'] as List).cast<Map<String, dynamic>>());
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Scan failed: $e')));
+    } finally {
+      if (mounted) setState(() => _loading = false);
+      await _camera?.dispose();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,10 +92,20 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
                 DropdownMenuItem(value: 'snack', child: Text('Snack')),
               ]),
               const Spacer(),
-              FilledButton.icon(onPressed: _loading ? null : _pickAndScan, icon: const Icon(Icons.image_outlined), label: const Text('Select Image')),
+              FilledButton.icon(onPressed: _loading ? null : _pickAndScan, icon: const Icon(Icons.image_outlined), label: const Text('Gallery')),
+              const SizedBox(width: 8),
+              FilledButton.icon(onPressed: _loading ? null : _openCameraAndScan, icon: const Icon(Icons.camera_alt_outlined), label: const Text('Camera')),
             ]),
             const SizedBox(height: 12),
-            if (_loading) const LinearProgressIndicator(),
+            if (_loading)
+              Center(
+                child: Lottie.asset('assets/lottie/scanning.json', width: 160, repeat: true),
+              )
+            else
+              SizedBox(
+                height: 80,
+                child: const RiveAnimation.asset('assets/rive/header.riv', animations: ['idle']),
+              ),
             const SizedBox(height: 12),
             Expanded(
               child: items.isEmpty
