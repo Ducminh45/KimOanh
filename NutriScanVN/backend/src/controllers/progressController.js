@@ -151,7 +151,10 @@ export const progressController = {
 
   async addWeight(req, res) {
     const { weightKg } = req.body;
-    const r = await query('INSERT INTO weight_logs (id, user_id, weight_kg) VALUES (gen_random_uuid(), $1, $2) RETURNING id, weight_kg, logged_at', [req.user.userId, weightKg]);
+    // Use application-generated UUID for compatibility
+    const idRes = await query("SELECT uuid_generate_v4() as id").catch(() => null);
+    const id = idRes?.rows?.[0]?.id || `${Date.now()}`; // fallback string if extension missing (dev only)
+    const r = await query('INSERT INTO weight_logs (id, user_id, weight_kg) VALUES ($1, $2, $3) RETURNING id, weight_kg, logged_at', [id, req.user.userId, weightKg]);
     return res.status(201).json(r.rows[0]);
   },
 

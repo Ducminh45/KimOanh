@@ -14,6 +14,7 @@ import socialRoutes from './routes/social.js';
 import challengesRoutes from './routes/challenges.js';
 import uploadRoutes from './routes/upload.js';
 import path from 'path';
+import recipesRoutes from './routes/recipes.js';
 
 dotenv.config();
 
@@ -35,6 +36,7 @@ app.use('/api/billing', billingRoutes);
 app.use('/api/social', socialRoutes);
 app.use('/api/challenges', challengesRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/recipes', recipesRoutes);
 app.use('/uploads', (req, res, next) => {
   // serve static uploaded images
   const p = path.join(process.cwd(), 'NutriScanVN/backend/uploads');

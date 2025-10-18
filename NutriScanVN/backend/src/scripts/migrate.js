@@ -18,6 +18,7 @@ async function runSqlFile(relativePath) {
     logger.info('Running database migrations...');
     await runSqlFile('schema.sql');
     logger.info('Schema applied');
+    try { await runSqlFile('recipes.sql'); logger.info('Recipes schema applied'); } catch {}
     try {
       await runSqlFile('seeds.sql');
       logger.info('Seeds applied');

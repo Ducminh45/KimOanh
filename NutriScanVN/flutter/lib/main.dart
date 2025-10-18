@@ -17,6 +17,7 @@ import 'src/screens/profile/profile_screen.dart';
 import 'src/screens/social/social_feed_screen.dart';
 import 'src/screens/challenges/challenges_screen.dart';
 import 'src/screens/leaderboard/leaderboard_screen.dart';
+import 'src/screens/weight/weight_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,6 +38,7 @@ final _router = GoRouter(
     GoRoute(path: '/social', builder: (_, __) => const SocialFeedScreen()),
     GoRoute(path: '/challenges', builder: (_, __) => const ChallengesScreen()),
     GoRoute(path: '/leaderboard', builder: (_, __) => const LeaderboardScreen()),
+    GoRoute(path: '/weight', builder: (_, __) => const WeightScreen()),
     GoRoute(path: '/water', builder: (_, __) => const WaterScreen()),
     GoRoute(path: '/exercise', builder: (_, __) => const ExerciseScreen()),
     GoRoute(path: '/premium', builder: (_, __) => const PremiumScreen()),
