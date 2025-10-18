@@ -38,5 +38,16 @@ export const socialController = {
     const id = uuidv4();
     await query('INSERT INTO post_comments (id, post_id, user_id, content) VALUES ($1,$2,$3,$4)', [id, postId, req.user.userId, content]);
     return res.status(201).json({ id });
+  },
+
+  async listComments(req, res) {
+    const { postId } = req.params;
+    const rows = await query(
+      `SELECT pc.id, pc.content, pc.created_at, u.full_name
+       FROM post_comments pc JOIN users u ON u.id = pc.user_id
+       WHERE pc.post_id = $1 ORDER BY pc.created_at ASC`,
+      [postId]
+    );
+    return res.json({ items: rows.rows });
   }
 };

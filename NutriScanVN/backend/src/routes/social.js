@@ -11,5 +11,6 @@ router.post('/posts', requireAuth, validateBody(Joi.object({ content: Joi.string
 router.post('/posts/:postId/like', requireAuth, socialController.like);
 router.delete('/posts/:postId/like', requireAuth, socialController.unlike);
 router.post('/posts/:postId/comments', requireAuth, validateBody(Joi.object({ content: Joi.string().min(1).required() })), socialController.comment);
+router.get('/posts/:postId/comments', requireAuth, socialController.listComments);
 
 export default router;
