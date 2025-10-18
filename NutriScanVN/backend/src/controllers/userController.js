@@ -39,13 +39,16 @@ export const userController = {
       goal,
       activityLevel,
       dietaryPreferences,
-      allergies
+      allergies,
+      language,
+      unitSystem,
+      notifications
     } = req.body;
 
     const sql = `INSERT INTO user_profiles (
-        user_id, gender, birth_date, height_cm, weight_kg, goal, activity_level, dietary_preferences, allergies, updated_at
+        user_id, gender, birth_date, height_cm, weight_kg, goal, activity_level, dietary_preferences, allergies, language, unit_system, notifications, updated_at
       ) VALUES (
-        $1,$2,$3,$4,$5,$6,$7,$8,$9,NOW()
+        $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,NOW()
       ) ON CONFLICT (user_id) DO UPDATE SET
         gender = EXCLUDED.gender,
         birth_date = EXCLUDED.birth_date,
@@ -55,6 +58,9 @@ export const userController = {
         activity_level = EXCLUDED.activity_level,
         dietary_preferences = EXCLUDED.dietary_preferences,
         allergies = EXCLUDED.allergies,
+        language = EXCLUDED.language,
+        unit_system = EXCLUDED.unit_system,
+        notifications = EXCLUDED.notifications,
         updated_at = NOW()
       RETURNING *`;
 
@@ -67,7 +73,10 @@ export const userController = {
       goal,
       activityLevel,
       dietaryPreferences,
-      allergies
+      allergies,
+      language,
+      unitSystem,
+      notifications
     ]);
 
     return res.json(result.rows[0]);

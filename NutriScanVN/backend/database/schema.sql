@@ -53,6 +53,9 @@ CREATE TABLE IF NOT EXISTS user_profiles (
   activity_level TEXT CHECK (activity_level IN ('sedentary','light','moderate','active','very_active')),
   dietary_preferences JSONB,
   allergies JSONB,
+  language TEXT,
+  unit_system TEXT CHECK (unit_system IN ('metric','imperial')),
+  notifications JSONB,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
@@ -122,3 +125,94 @@ CREATE TABLE IF NOT EXISTS exercise_logs (
 );
 
 CREATE INDEX IF NOT EXISTS idx_exercise_logs_user_date ON exercise_logs(user_id, logged_at DESC);
+
+-- Weight logs
+CREATE TABLE IF NOT EXISTS weight_logs (
+  id UUID PRIMARY KEY,
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  weight_kg NUMERIC(5,2) NOT NULL,
+  logged_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_weight_logs_user_date ON weight_logs(user_id, logged_at DESC);
+
+-- Chat history
+CREATE TABLE IF NOT EXISTS chat_messages (
+  id UUID PRIMARY KEY,
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  role TEXT CHECK (role IN ('user','assistant')) NOT NULL,
+  content TEXT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_chat_messages_user_date ON chat_messages(user_id, created_at DESC);
+
+-- Subscription (premium)
+CREATE TABLE IF NOT EXISTS subscriptions (
+  user_id UUID PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+  tier TEXT CHECK (tier IN ('free','premium_monthly','premium_yearly')) DEFAULT 'free',
+  renewed_at TIMESTAMP WITH TIME ZONE,
+  expires_at TIMESTAMP WITH TIME ZONE
+);
+
+-- Scan logs for enforcing free-tier limits
+CREATE TABLE IF NOT EXISTS scan_logs (
+  id UUID PRIMARY KEY,
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_scan_logs_user_date ON scan_logs(user_id, created_at DESC);
+
+-- Social features
+CREATE TABLE IF NOT EXISTS posts (
+  id UUID PRIMARY KEY,
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  content TEXT,
+  image_url TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_posts_user_date ON posts(user_id, created_at DESC);
+
+CREATE TABLE IF NOT EXISTS post_likes (
+  post_id UUID NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  PRIMARY KEY (post_id, user_id)
+);
+
+CREATE TABLE IF NOT EXISTS post_comments (
+  id UUID PRIMARY KEY,
+  post_id UUID NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  content TEXT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS follows (
+  follower_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  followee_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  PRIMARY KEY (follower_id, followee_id)
+);
+
+-- Challenges & Gamification
+CREATE TABLE IF NOT EXISTS challenges (
+  id UUID PRIMARY KEY,
+  title TEXT NOT NULL,
+  period TEXT CHECK (period IN ('weekly','monthly')) NOT NULL,
+  start_at TIMESTAMP WITH TIME ZONE NOT NULL,
+  end_at TIMESTAMP WITH TIME ZONE NOT NULL,
+  goal_type TEXT,
+  goal_value NUMERIC(10,2),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS user_challenges (
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  challenge_id UUID NOT NULL REFERENCES challenges(id) ON DELETE CASCADE,
+  progress_value NUMERIC(10,2) DEFAULT 0,
+  joined_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  PRIMARY KEY (user_id, challenge_id)
+);
