@@ -61,7 +61,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Calories: ${summary!['calories']} kcal'),
+                  Text('Calories: ${summary!['calories']} / ${summary!['goalCalories'] ?? '-'} kcal'),
                   Text('Water: ${summary!['waterMl']} ml'),
                   Text('Exercise: ${summary!['caloriesBurned']} kcal'),
                   Text('Macros - P: ${summary!['macros']['proteinG']}g, C: ${summary!['macros']['carbsG']}g, F: ${summary!['macros']['fatG']}g'),

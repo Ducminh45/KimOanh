@@ -15,6 +15,9 @@ class AuthService {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('accessToken', res['accessToken'] as String);
     await prefs.setString('refreshToken', res['refreshToken'] as String);
+    if (res['userId'] is String) {
+      await prefs.setString('userId', res['userId'] as String);
+    }
   }
 
   Future<void> logout() async {

@@ -77,7 +77,7 @@ export const progressController = {
   async getDailySummary(req, res) {
     const { start, end } = getDateRange(req.query.date);
 
-    const [waterRes, exerciseRes, foodRes] = await Promise.all([
+    const [waterRes, exerciseRes, foodRes, goalRes] = await Promise.all([
       query(
         `SELECT COALESCE(SUM(amount_ml),0) as total_ml FROM water_logs WHERE user_id = $1 AND logged_at BETWEEN $2 AND $3`,
         [req.user.userId, start, end]
@@ -91,13 +91,29 @@ export const progressController = {
                 COALESCE(SUM(carbs_g),0) as carbs_g, COALESCE(SUM(fat_g),0) as fat_g, COALESCE(SUM(fiber_g),0) as fiber_g
          FROM food_logs WHERE user_id = $1 AND logged_at BETWEEN $2 AND $3`,
         [req.user.userId, start, end]
-      )
+      ),
+      query(`SELECT gender, birth_date, height_cm, weight_kg, goal, activity_level FROM user_profiles WHERE user_id = $1`, [req.user.userId])
     ]);
+
+    // estimate target calories (simple): BMR*M - delta
+    let goalCalories = null;
+    if (goalRes.rowCount > 0) {
+      const m = goalRes.rows[0];
+      const age = Math.floor((Date.now() - new Date(m.birth_date).getTime()) / (365.25*24*3600*1000));
+      const bmr = (m.gender === 'male')
+        ? Math.round(10*Number(m.weight_kg||70) + 6.25*Number(m.height_cm||170) - 5*age + 5)
+        : Math.round(10*Number(m.weight_kg||70) + 6.25*Number(m.height_cm||170) - 5*age - 161);
+      const mult = { sedentary:1.2, light:1.375, moderate:1.55, active:1.725, very_active:1.9 }[m.activity_level] || 1.375;
+      const tdee = Math.round(bmr * mult);
+      const delta = m.goal === 'lose' ? 500 : m.goal === 'gain' ? -(-300) : 0;
+      goalCalories = Math.max(1200, tdee + (m.goal==='lose'?-500:(m.goal==='gain'?300:0)));
+    }
 
     return res.json({
       waterMl: Number(waterRes.rows[0].total_ml),
       caloriesBurned: Number(exerciseRes.rows[0].calories_burned),
       calories: Number(foodRes.rows[0].calories),
+      goalCalories,
       macros: {
         proteinG: Number(foodRes.rows[0].protein_g),
         carbsG: Number(foodRes.rows[0].carbs_g),

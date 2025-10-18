@@ -87,7 +87,7 @@ export const authController = {
       [uuidv4(), user.id, refreshTokenHash, process.env.JWT_REFRESH_EXPIRES || '30 days']
     );
 
-    return res.json({ accessToken, refreshToken });
+    return res.json({ accessToken, refreshToken, userId: user.id });
   },
 
   async refresh(req, res) {

@@ -12,6 +12,7 @@ class SocialFeedScreen extends ConsumerStatefulWidget {
 class _SocialFeedScreenState extends ConsumerState<SocialFeedScreen> {
   List<Map<String, dynamic>> items = [];
   final contentCtrl = TextEditingController();
+  String? imageUrl;
 
   Future<void> _load() async {
     final api = ref.read(apiClientProvider);
@@ -21,8 +22,9 @@ class _SocialFeedScreenState extends ConsumerState<SocialFeedScreen> {
 
   Future<void> _create() async {
     final api = ref.read(apiClientProvider);
-    await api.postJson('/social/posts', { 'content': contentCtrl.text });
+    await api.postJson('/social/posts', { 'content': contentCtrl.text, 'imageUrl': imageUrl });
     contentCtrl.clear();
+    imageUrl = null;
     await _load();
   }
 
@@ -82,7 +84,10 @@ class _SocialFeedScreenState extends ConsumerState<SocialFeedScreen> {
                 final p = items[i];
                 return ListTile(
                   title: Text(p['full_name'] ?? 'User'),
-                  subtitle: Text(p['content'] ?? ''),
+                  subtitle: Column(crossAxisAlignment: CrossAxisAlignment.start, children:[
+                    if ((p['image_url'] as String?)?.isNotEmpty == true) Image.network(p['image_url']),
+                    if ((p['content'] as String?)?.isNotEmpty == true) Text(p['content'] ?? ''),
+                  ]),
                   trailing: Row(mainAxisSize: MainAxisSize.min, children:[
                     IconButton(icon: const Icon(Icons.thumb_up_alt_outlined), onPressed: ()=> _like(p['id'] as String)),
                     IconButton(icon: const Icon(Icons.thumb_down_alt_outlined), onPressed: ()=> _unlike(p['id'] as String)),
