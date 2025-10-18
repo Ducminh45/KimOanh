@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers.dart';
 import '../../services/api_client.dart';
+import 'package:image_picker/image_picker.dart';
 
 class SocialFeedScreen extends ConsumerStatefulWidget {
   const SocialFeedScreen({super.key});
@@ -13,6 +14,7 @@ class _SocialFeedScreenState extends ConsumerState<SocialFeedScreen> {
   List<Map<String, dynamic>> items = [];
   final contentCtrl = TextEditingController();
   String? imageUrl;
+  bool posting = false;
 
   Future<void> _load() async {
     final api = ref.read(apiClientProvider);
@@ -20,12 +22,24 @@ class _SocialFeedScreenState extends ConsumerState<SocialFeedScreen> {
     setState(() => items = (r['items'] as List).cast<Map<String, dynamic>>());
   }
 
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final file = await picker.pickImage(source: ImageSource.gallery, imageQuality: 85);
+    if (file == null) return;
+    final bytes = await file.readAsBytes();
+    final api = ref.read(apiClientProvider);
+    final res = await api.postJson('/upload/base64', { 'imageBase64': base64Encode(bytes), 'extension': 'jpg' });
+    setState(() => imageUrl = res['url'] as String);
+  }
+
   Future<void> _create() async {
     final api = ref.read(apiClientProvider);
+    setState(() => posting = true);
     await api.postJson('/social/posts', { 'content': contentCtrl.text, 'imageUrl': imageUrl });
     contentCtrl.clear();
     imageUrl = null;
     await _load();
+    setState(() => posting = false);
   }
 
   Future<void> _like(String postId) async {
@@ -71,8 +85,9 @@ class _SocialFeedScreenState extends ConsumerState<SocialFeedScreen> {
             padding: const EdgeInsets.all(12),
             child: Row(children: [
               Expanded(child: TextField(controller: contentCtrl, decoration: const InputDecoration(hintText: 'Share something...'))),
+              IconButton(onPressed: _pickImage, icon: const Icon(Icons.image_outlined)),
               const SizedBox(width: 8),
-              FilledButton(onPressed: _create, child: const Text('Post')),
+              FilledButton(onPressed: posting ? null : _create, child: Text(posting ? 'Posting...' : 'Post')),
             ]),
           ),
           const Divider(height: 1),

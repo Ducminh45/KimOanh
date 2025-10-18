@@ -24,6 +24,16 @@ export const shoppingController = {
     await query('INSERT INTO shopping_items (id, list_id, name, quantity, category) VALUES ($1,$2,$3,$4,$5)', [id, listId, name, quantity || null, category || null]);
     return res.status(201).json({ id });
   },
+  async addItemsBulk(req, res) {
+    const { listId } = req.params;
+    const { items } = req.body || {};
+    if (!Array.isArray(items) || items.length === 0) return res.status(400).json({ message: 'items required' });
+    for (const it of items) {
+      const id = uuidv4();
+      await query('INSERT INTO shopping_items (id, list_id, name, quantity, category) VALUES ($1,$2,$3,$4,$5)', [id, listId, it.name, it.quantity || null, it.category || null]);
+    }
+    return res.status(201).json({ added: items.length });
+  },
   async toggleItem(req, res) {
     const { itemId } = req.params;
     await query('UPDATE shopping_items SET checked = NOT checked WHERE id = $1', [itemId]);
