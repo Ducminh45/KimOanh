@@ -48,7 +48,14 @@ export const schemas = {
     goal: Joi.string().valid('lose', 'maintain', 'gain').required(),
     activityLevel: Joi.string().valid('sedentary','light','moderate','active','very_active').required(),
     dietaryPreferences: Joi.array().items(Joi.string()).default([]),
-    allergies: Joi.array().items(Joi.string()).default([])
+    allergies: Joi.array().items(Joi.string()).default([]),
+    language: Joi.string().valid('vi','en').default('vi'),
+    unitSystem: Joi.string().valid('metric','imperial').default('metric'),
+    notifications: Joi.object({
+      reminders: Joi.boolean().default(true),
+      water: Joi.boolean().default(true),
+      exercise: Joi.boolean().default(true)
+    }).default({})
   })
   ,
   addWater: Joi.object({

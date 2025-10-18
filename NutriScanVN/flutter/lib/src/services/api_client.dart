@@ -65,18 +65,42 @@ class ApiClient {
   Future<Map<String, dynamic>> postJson(String path, Map<String, dynamic> body) async {
     final res = await _request('POST', path, body: body);
     if (res.statusCode >= 200 && res.statusCode < 300) return jsonDecode(res.body) as Map<String, dynamic>;
-    throw Exception('HTTP ${res.statusCode}: ${res.body}');
+    final err = _parseError(res);
+    throw err;
     }
 
   Future<Map<String, dynamic>> putJson(String path, Map<String, dynamic> body) async {
     final res = await _request('PUT', path, body: body);
     if (res.statusCode >= 200 && res.statusCode < 300) return jsonDecode(res.body) as Map<String, dynamic>;
-    throw Exception('HTTP ${res.statusCode}: ${res.body}');
+    final err = _parseError(res);
+    throw err;
   }
 
   Future<Map<String, dynamic>> getJson(String path, {Map<String, String>? query}) async {
     final res = await _request('GET', path, query: query);
     if (res.statusCode >= 200 && res.statusCode < 300) return jsonDecode(res.body) as Map<String, dynamic>;
-    throw Exception('HTTP ${res.statusCode}: ${res.body}');
+    final err = _parseError(res);
+    throw err;
   }
+
+  Exception _parseError(http.Response res) {
+    try {
+      final data = jsonDecode(res.body);
+      if (data is Map<String, dynamic>) {
+        final code = data['code'] as String?;
+        final message = data['message'] as String? ?? 'Error';
+        return ApiException(status: res.statusCode, code: code, message: message);
+      }
+    } catch (_) {}
+    return Exception('HTTP ${res.statusCode}: ${res.body}');
+  }
+}
+
+class ApiException implements Exception {
+  ApiException({required this.status, this.code, required this.message});
+  final int status;
+  final String? code;
+  final String message;
+  @override
+  String toString() => 'ApiException($status, $code, $message)';
 }

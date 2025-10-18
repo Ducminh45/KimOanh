@@ -40,7 +40,15 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
       setState(() => items = (res['items'] as List).cast<Map<String, dynamic>>());
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Scan failed: $e')));
+      final msg = e.toString();
+      if (msg.contains('SCAN_LIMIT_REACHED')) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Đã hết 3 lần quét miễn phí hôm nay. Nâng cấp Premium.')));
+        // Navigate to Premium screen
+        // ignore: use_build_context_synchronously
+        Navigator.of(context).pushNamed('/premium');
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Scan failed: $e')));
+      }
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -67,7 +75,14 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
       setState(() => items = (res['items'] as List).cast<Map<String, dynamic>>());
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Scan failed: $e')));
+      final msg = e.toString();
+      if (msg.contains('SCAN_LIMIT_REACHED')) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Đã hết 3 lần quét miễn phí hôm nay. Nâng cấp Premium.')));
+        // ignore: use_build_context_synchronously
+        Navigator.of(context).pushNamed('/premium');
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Scan failed: $e')));
+      }
     } finally {
       if (mounted) setState(() => _loading = false);
       await _camera?.dispose();

@@ -53,6 +53,9 @@ CREATE TABLE IF NOT EXISTS user_profiles (
   activity_level TEXT CHECK (activity_level IN ('sedentary','light','moderate','active','very_active')),
   dietary_preferences JSONB,
   allergies JSONB,
+  language TEXT,
+  unit_system TEXT CHECK (unit_system IN ('metric','imperial')),
+  notifications JSONB,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
