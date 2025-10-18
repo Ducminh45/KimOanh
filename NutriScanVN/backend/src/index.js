@@ -11,6 +11,7 @@ import aiRoutes from './routes/ai.js';
 import diaryRoutes from './routes/diary.js';
 import billingRoutes from './routes/billing.js';
 import socialRoutes from './routes/social.js';
+import challengesRoutes from './routes/challenges.js';
 
 dotenv.config();
 
@@ -30,6 +31,7 @@ app.use('/api/ai', aiRoutes);
 app.use('/api/diary', diaryRoutes);
 app.use('/api/billing', billingRoutes);
 app.use('/api/social', socialRoutes);
+app.use('/api/challenges', challengesRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ message: 'Not found' });
