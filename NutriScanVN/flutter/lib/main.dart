@@ -17,6 +17,8 @@ import 'src/screens/profile/profile_screen.dart';
 import 'src/screens/social/social_feed_screen.dart';
 import 'src/screens/challenges/challenges_screen.dart';
 import 'src/screens/leaderboard/leaderboard_screen.dart';
+import 'src/screens/recipes/recipes_list_screen.dart';
+import 'src/screens/recipes/recipe_detail_screen.dart';
 import 'src/screens/weight/weight_screen.dart';
 
 void main() {
@@ -43,6 +45,8 @@ final _router = GoRouter(
     GoRoute(path: '/exercise', builder: (_, __) => const ExerciseScreen()),
     GoRoute(path: '/premium', builder: (_, __) => const PremiumScreen()),
     GoRoute(path: '/mealplanner', builder: (_, __) => const MealPlannerScreen()),
+    GoRoute(path: '/recipes', builder: (_, __) => const RecipesListScreen()),
+    GoRoute(path: '/recipes/:id', builder: (ctx, state) => RecipeDetailScreen(id: state.pathParameters['id']!)),
   ],
 );
 
