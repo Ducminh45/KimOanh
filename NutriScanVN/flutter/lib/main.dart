@@ -13,6 +13,10 @@ import 'src/screens/water/water_screen.dart';
 import 'src/screens/exercise/exercise_screen.dart';
 import 'src/screens/premium/premium_screen.dart';
 import 'src/screens/mealplanner/meal_planner_screen.dart';
+import 'src/screens/profile/profile_screen.dart';
+import 'src/screens/social/social_feed_screen.dart';
+import 'src/screens/challenges/challenges_screen.dart';
+import 'src/screens/leaderboard/leaderboard_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,6 +33,10 @@ final _router = GoRouter(
     GoRoute(path: '/scanner', builder: (_, __) => const ScannerScreen()),
     GoRoute(path: '/chat', builder: (_, __) => const ChatScreen()),
     GoRoute(path: '/settings', builder: (_, __) => const SettingsScreen()),
+    GoRoute(path: '/profile', builder: (_, __) => const ProfileScreen()),
+    GoRoute(path: '/social', builder: (_, __) => const SocialFeedScreen()),
+    GoRoute(path: '/challenges', builder: (_, __) => const ChallengesScreen()),
+    GoRoute(path: '/leaderboard', builder: (_, __) => const LeaderboardScreen()),
     GoRoute(path: '/water', builder: (_, __) => const WaterScreen()),
     GoRoute(path: '/exercise', builder: (_, __) => const ExerciseScreen()),
     GoRoute(path: '/premium', builder: (_, __) => const PremiumScreen()),
