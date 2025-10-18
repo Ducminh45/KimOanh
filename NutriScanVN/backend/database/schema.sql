@@ -126,6 +126,16 @@ CREATE TABLE IF NOT EXISTS exercise_logs (
 
 CREATE INDEX IF NOT EXISTS idx_exercise_logs_user_date ON exercise_logs(user_id, logged_at DESC);
 
+-- Weight logs
+CREATE TABLE IF NOT EXISTS weight_logs (
+  id UUID PRIMARY KEY,
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  weight_kg NUMERIC(5,2) NOT NULL,
+  logged_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_weight_logs_user_date ON weight_logs(user_id, logged_at DESC);
+
 -- Chat history
 CREATE TABLE IF NOT EXISTS chat_messages (
   id UUID PRIMARY KEY,
