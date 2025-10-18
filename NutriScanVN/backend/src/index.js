@@ -9,6 +9,7 @@ import foodRoutes from './routes/food.js';
 import progressRoutes from './routes/progress.js';
 import aiRoutes from './routes/ai.js';
 import diaryRoutes from './routes/diary.js';
+import billingRoutes from './routes/billing.js';
 
 dotenv.config();
 
@@ -26,6 +27,7 @@ app.use('/api/food', foodRoutes);
 app.use('/api/progress', progressRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/diary', diaryRoutes);
+app.use('/api/billing', billingRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ message: 'Not found' });

@@ -141,3 +141,12 @@ CREATE TABLE IF NOT EXISTS subscriptions (
   renewed_at TIMESTAMP WITH TIME ZONE,
   expires_at TIMESTAMP WITH TIME ZONE
 );
+
+-- Scan logs for enforcing free-tier limits
+CREATE TABLE IF NOT EXISTS scan_logs (
+  id UUID PRIMARY KEY,
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_scan_logs_user_date ON scan_logs(user_id, created_at DESC);

@@ -17,5 +17,6 @@ router.delete('/exercise/:id', requireAuth, progressController.deleteExercise);
 
 // Daily summary (calories, macros, water, exercise)
 router.get('/summary', requireAuth, progressController.getDailySummary);
+router.get('/history', requireAuth, progressController.getHistory);
 
 export default router;

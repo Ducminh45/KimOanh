@@ -106,4 +106,24 @@ export const progressController = {
       }
     });
   }
+  ,
+
+  async getHistory(req, res) {
+    const { days = 7 } = req.query;
+    const n = Math.max(1, Math.min(90, Number(days || 7)));
+    const rows = await query(
+      `WITH dates AS (
+         SELECT generate_series::date AS d
+         FROM generate_series(CURRENT_DATE - ($1::int - 1), CURRENT_DATE, '1 day')
+       )
+       SELECT d.d AS date,
+         COALESCE((SELECT SUM(calories) FROM food_logs fl WHERE fl.user_id = $2 AND fl.logged_at::date = d.d),0) AS calories,
+         COALESCE((SELECT SUM(amount_ml) FROM water_logs wl WHERE wl.user_id = $2 AND wl.logged_at::date = d.d),0) AS water_ml,
+         COALESCE((SELECT SUM(calories_burned) FROM exercise_logs el WHERE el.user_id = $2 AND el.logged_at::date = d.d),0) AS calories_burned
+       FROM dates d
+       ORDER BY d.d ASC`,
+      [n, req.user.userId]
+    );
+    return res.json({ days: n, items: rows.rows });
+  }
 };

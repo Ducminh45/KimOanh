@@ -6,6 +6,19 @@ import { query } from '../config/database.js';
 export const aiController = {
   async scanFood(req, res) {
     const { imageBase64, imageUrl, locale = 'vi', mealType, autoLog = false } = req.body || {};
+    // Enforce free-tier scan limit: 3/day unless premium
+    const userId = req.user.userId;
+    const sub = await query('SELECT tier, expires_at FROM subscriptions WHERE user_id = $1', [userId]);
+    const isPremium = sub.rowCount > 0 && sub.rows[0].tier && sub.rows[0].tier !== 'free' && (!sub.rows[0].expires_at || new Date(sub.rows[0].expires_at) > new Date());
+    if (!isPremium) {
+      const start = new Date();
+      const startUtc = new Date(Date.UTC(start.getUTCFullYear(), start.getUTCMonth(), start.getUTCDate(), 0, 0, 0));
+      const endUtc = new Date(Date.UTC(start.getUTCFullYear(), start.getUTCMonth(), start.getUTCDate(), 23, 59, 59));
+      const countRes = await query('SELECT COUNT(*)::int AS c FROM scan_logs WHERE user_id = $1 AND created_at BETWEEN $2 AND $3', [userId, startUtc, endUtc]);
+      if (Number(countRes.rows[0].c) >= 3) {
+        return res.status(402).json({ code: 'SCAN_LIMIT_REACHED', message: 'Bạn đã dùng hết 3 lần quét miễn phí hôm nay. Nâng cấp Premium để tiếp tục.' });
+      }
+    }
     if (!imageBase64 && !imageUrl) {
       return res.status(400).json({ message: 'imageBase64 or imageUrl is required' });
     }
@@ -62,7 +75,10 @@ export const aiController = {
       }
     }
 
-    return res.json({ items: results, loggedIds: createdLogIds });
+    // record scan usage
+    await query('INSERT INTO scan_logs (id, user_id) VALUES ($1,$2)', [uuidv4(), userId]);
+
+    return res.json({ items: results, loggedIds: createdLogIds, premium: isPremium });
   },
 
   async chat(req, res) {
@@ -119,5 +135,43 @@ export const aiController = {
     );
 
     return res.json({ reply: reply.reply });
+  }
+  ,
+
+  async mealPlan(req, res) {
+    const { targetCalories = 2000, days = 7, locale = 'vi' } = req.body || {};
+    const d = Math.max(1, Math.min(7, Number(days || 7)));
+    // Simple stubbed meal plan using local foods, grouped by 3 meals
+    const foods = await query(`SELECT id, name_vi, name_en, calories, protein_g, carbs_g, fat_g, serving_size_g FROM foods ORDER BY name_vi ASC LIMIT 20`);
+    const items = foods.rows.map((f) => ({
+      id: f.id,
+      name: locale === 'vi' ? f.name_vi : (f.name_en || f.name_vi),
+      calories: Number(f.calories || 0),
+      proteinG: Number(f.protein_g || 0),
+      carbsG: Number(f.carbs_g || 0),
+      fatG: Number(f.fat_g || 0),
+      servingSizeG: Number(f.serving_size_g || 100)
+    }));
+
+    const plan = [];
+    for (let day = 0; day < d; day++) {
+      const dayMeals = { breakfast: [], lunch: [], dinner: [], totalCalories: 0 };
+      let remaining = Number(targetCalories);
+      for (const meal of ['breakfast','lunch','dinner']) {
+        const picks = items.slice((day * 3) % items.length, ((day * 3) % items.length) + 3);
+        const perMealTarget = Math.round(remaining / (3 - ['breakfast','lunch','dinner'].indexOf(meal)));
+        let sum = 0;
+        for (const p of picks) {
+          if (sum + p.calories <= perMealTarget) {
+            dayMeals[meal].push({ name: p.name, servingG: p.servingSizeG, calories: p.calories });
+            sum += p.calories;
+          }
+        }
+        remaining -= sum;
+        dayMeals.totalCalories += sum;
+      }
+      plan.push(dayMeals);
+    }
+    return res.json({ days: d, targetCalories, plan });
   }
 };

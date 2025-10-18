@@ -35,6 +35,7 @@ Base URL: `http://localhost:4000/api`
 - POST `/progress/exercise` { type, durationMin, intensity } Bearer
 - DELETE `/progress/exercise/:id` Bearer
 - GET `/progress/summary?date=YYYY-MM-DD` Bearer
+- GET `/progress/history?days=7` Bearer
 
 ## Diary
 
@@ -47,8 +48,13 @@ Base URL: `http://localhost:4000/api`
 
 - POST `/ai/scan` Bearer
   - Body: { imageBase64?: string, imageUrl?: string, locale?: 'vi'|'en', mealType?: 'breakfast'|'lunch'|'dinner'|'snack', autoLog?: boolean }
-  - Response: { items: [{ name, detectedServingGrams, confidence, match?, nutrition?, alternatives: [] }], loggedIds: [] }
+  - Response: { items: [{ name, detectedServingGrams, confidence, match?, nutrition?, alternatives: [] }], loggedIds: [], premium: boolean }
 
 - POST `/ai/chat` Bearer
   - Body: { messages: [{ role: 'user'|'assistant', content: string }], locale?: 'vi'|'en' }
   - Response: { reply: string }
+
+## Billing
+
+- GET `/billing/me` Bearer -> { tier, renewed_at?, expires_at? }
+- PUT `/billing/me` { tier: 'free'|'premium_monthly'|'premium_yearly' } Bearer
