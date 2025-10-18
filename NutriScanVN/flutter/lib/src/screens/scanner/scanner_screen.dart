@@ -8,6 +8,7 @@ import 'package:lottie/lottie.dart';
 import 'package:rive/rive.dart';
 import '../../providers.dart';
 import '../../services/api_client.dart';
+import 'fix_results_screen.dart';
 
 class ScannerScreen extends ConsumerStatefulWidget {
   const ScannerScreen({super.key});
@@ -37,7 +38,10 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
         'mealType': _meal.value,
         'autoLog': false,
       });
-      setState(() => items = (res['items'] as List).cast<Map<String, dynamic>>());
+      final list = (res['items'] as List).cast<Map<String, dynamic>>();
+      if (!mounted) return;
+      final saved = await Navigator.of(context).push(MaterialPageRoute(builder: (_) => FixResultsScreen(items: list, meal: _meal.value)));
+      if (saved == true) setState(() => items = []);
     } catch (e) {
       if (!mounted) return;
       final msg = e.toString();
@@ -72,7 +76,10 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
         'mealType': _meal.value,
         'autoLog': false,
       });
-      setState(() => items = (res['items'] as List).cast<Map<String, dynamic>>());
+      final list = (res['items'] as List).cast<Map<String, dynamic>>();
+      if (!mounted) return;
+      final saved = await Navigator.of(context).push(MaterialPageRoute(builder: (_) => FixResultsScreen(items: list, meal: _meal.value)));
+      if (saved == true) setState(() => items = []);
     } catch (e) {
       if (!mounted) return;
       final msg = e.toString();

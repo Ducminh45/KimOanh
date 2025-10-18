@@ -142,4 +142,22 @@ export const progressController = {
     );
     return res.json({ days: n, items: rows.rows });
   }
+  ,
+
+  async listWeight(req, res) {
+    const rows = await query('SELECT id, weight_kg, logged_at FROM weight_logs WHERE user_id = $1 ORDER BY logged_at DESC', [req.user.userId]);
+    return res.json({ items: rows.rows });
+  },
+
+  async addWeight(req, res) {
+    const { weightKg } = req.body;
+    const r = await query('INSERT INTO weight_logs (id, user_id, weight_kg) VALUES (gen_random_uuid(), $1, $2) RETURNING id, weight_kg, logged_at', [req.user.userId, weightKg]);
+    return res.status(201).json(r.rows[0]);
+  },
+
+  async deleteWeight(req, res) {
+    const { id } = req.params;
+    await query('DELETE FROM weight_logs WHERE id = $1 AND user_id = $2', [id, req.user.userId]);
+    return res.json({ message: 'Deleted' });
+  }
 };

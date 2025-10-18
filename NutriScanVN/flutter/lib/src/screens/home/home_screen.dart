@@ -65,6 +65,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   Text('Water: ${summary!['waterMl']} ml'),
                   Text('Exercise: ${summary!['caloriesBurned']} kcal'),
                   Text('Macros - P: ${summary!['macros']['proteinG']}g, C: ${summary!['macros']['carbsG']}g, F: ${summary!['macros']['fatG']}g'),
+                  const SizedBox(height: 8),
+                  SizedBox(
+                    height: 120,
+                    child: BarChart(
+                      BarChartData(
+                        titlesData: FlTitlesData(show: false),
+                        gridData: const FlGridData(show: false),
+                        borderData: FlBorderData(show: false),
+                        barGroups: [
+                          BarChartGroupData(x: 0, barRods: [BarChartRodData(toY: (summary!['macros']['proteinG'] as num).toDouble(), color: Colors.red)]),
+                          BarChartGroupData(x: 1, barRods: [BarChartRodData(toY: (summary!['macros']['carbsG'] as num).toDouble(), color: Colors.blue)]),
+                          BarChartGroupData(x: 2, barRods: [BarChartRodData(toY: (summary!['macros']['fatG'] as num).toDouble(), color: Colors.amber)]),
+                        ],
+                      ),
+                    ),
+                  ),
                   const SizedBox(height: 16),
                   Row(children:[
                     const Text('Range: '),
